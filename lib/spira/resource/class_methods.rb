@@ -16,7 +16,7 @@ module Spira
 
       ##
       # The current repository for this class
-      # 
+      #
       # @return [RDF::Repository, nil]
       # @private
       def repository
@@ -47,14 +47,14 @@ module Spira
       # first time access is attempted on a field, the repository will be
       # queried for existing attributes, which will be used for the given URI.
       # Underlying repositories are not accessed at the time of calling `for`.
-      # 
+      #
       # A class with a base URI may still be projected for any URI, whether or
       # not it uses the given resource class' base URI.
       #
       # @raise [TypeError] if an RDF type is given in the attributes and one is
-      # given in the attributes.  
+      # given in the attributes.
       # @raise [ArgumentError] if a non-URI is given and the class does not
-      # have a base URI.  
+      # have a base URI.
       # @overload for(uri, attributes = {})
       #   @param [RDF::URI] uri The URI to create an instance for
       #   @param [Hash{Symbol => Any}] attributes Initial attributes
@@ -91,7 +91,7 @@ module Spira
       # @raise  [ArgumentError] If this class cannot create an identifier from the given argument
       # @see http://rdf.rubyforge.org/RDF/URI.html
       def id_for(identifier)
-        case 
+        case
           # Catches RDF::URI and implementing subclasses
           when identifier.respond_to?(:to_uri)
             identifier.to_uri
@@ -105,7 +105,7 @@ module Spira
             uri = RDF::URI.new(identifier.to_s)
             return uri if uri.absolute?
             raise ArgumentError, "Cannot create identifier for #{self} by String without base_uri; RDF::URI required" if self.base_uri.nil?
-            separator = self.base_uri.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
+            separator = self.base_uri.to_s =~ /(\/|#|:|-2F|-3A|-23)\z/ ? '' : '/'
             RDF::URI.new(self.base_uri.to_s + separator + identifier.to_s)
         end
       end
@@ -186,7 +186,7 @@ module Spira
         end
       end
 
-      ## 
+      ##
       # Handling module inclusions
       #
       # @private
@@ -194,7 +194,7 @@ module Spira
         inherited(child)
       end
 
-      ## 
+      ##
       # The list of validation functions for this projection
       #
       # @return [Array<Symbol>]
@@ -205,3 +205,4 @@ module Spira
     end
   end
 end
+

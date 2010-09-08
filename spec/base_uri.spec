@@ -15,6 +15,30 @@ describe 'Default URIs' do
       property :name, :predicate => RDFS.label
     end
 
+    class ::ColonBaseURITest
+      include Spira::Resource
+      base_uri "http://example.org/example:"
+      property :name, :predicate => RDFS.label
+    end
+
+    class ::EncodedSlashBaseURITest
+      include Spira::Resource
+      base_uri "http://example.org/example-2F"
+      property :name, :predicate => RDFS.label
+    end
+
+    class ::EncodedHashBaseURITest
+      include Spira::Resource
+      base_uri "http://example.org/example-23"
+      property :name, :predicate => RDFS.label
+    end
+
+    class ::EncodedColonBaseURITest
+      include Spira::Resource
+      base_uri "http://example.org/example-3A"
+      property :name, :predicate => RDFS.label
+    end
+
     class ::NoBaseURITest
       include Spira::Resource
       property :name, :predicate => RDFS.label
@@ -53,13 +77,13 @@ describe 'Default URIs' do
       BaseURITest.id_for(uri).should == RDF::URI.new(uri)
     end
 
-    it "should allow any type to be used as a URI fragment, via to_s" do 
+    it "should allow any type to be used as a URI fragment, via to_s" do
       uri = 'http://example.org/example/5'
       BaseURITest.id_for(5).should == RDF::URI.new(uri)
     end
 
     it "should not raise an exception to create an object without a URI for a class without a base_uri" do
-      lambda {x = BaseURITest.for 'bob'}.should_not raise_error 
+      lambda {x = BaseURITest.for 'bob'}.should_not raise_error
     end
 
     it "should be createable with a relative URI" do
@@ -83,6 +107,22 @@ describe 'Default URIs' do
     it "should not append a / if the base URI ends with a #" do
       HashBaseURITest.id_for('bob').should == RDF::URI.new('http://example.org/example#bob')
     end
+
+    it "should not append a / if the base URI ends with a :" do
+      ColonBaseURITest.id_for('bob').should == RDF::URI.new('http://example.org/example:bob')
+    end
+
+    it "should not append a / if the base URI ends with a -2F" do
+      EncodedSlashBaseURITest.id_for('bob').should == RDF::URI.new('http://example.org/example-2Fbob')
+    end
+
+    it "should not append a / if the base URI ends with a -23" do
+      EncodedHashBaseURITest.id_for('bob').should == RDF::URI.new('http://example.org/example-23bob')
+    end
+
+    it "should not append a / if the base URI ends with a -3A" do
+      EncodedColonBaseURITest.id_for('bob').should == RDF::URI.new('http://example.org/example-3Abob')
+    end
   end
 
   context "classes without a base URI" do
@@ -104,3 +144,4 @@ describe 'Default URIs' do
   end
 
 end
+
