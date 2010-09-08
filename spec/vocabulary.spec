@@ -48,9 +48,9 @@ describe 'default vocabularies' do
     before :all do
       class ::Bubble
         include Spira::Resource
-      
+
         default_vocabulary RDF::URI.new 'http://example.org/vocab/'
-      
+
         base_uri "http://example.org/bubbles/"
         property :year, :type => Integer
         property :name
@@ -60,6 +60,34 @@ describe 'default vocabularies' do
       class ::HashVocabTest
         include Spira::Resource
         default_vocabulary DefaultVocabVocab
+        base_uri "http://example.org/testing/"
+        property :name
+      end
+      class ::DefaultColonVocab < ::RDF::Vocabulary('http://example.org/test:') ; end
+      class ::ColonVocabTest
+        include Spira::Resource
+        default_vocabulary DefaultColonVocab
+        base_uri "http://example.org/testing/"
+        property :name
+      end
+      class ::DefaultEncodedSlashVocab < ::RDF::Vocabulary('http://example.org/test-2F') ; end
+      class ::EncodedSlashVocabTest
+        include Spira::Resource
+        default_vocabulary DefaultEncodedSlashVocab
+        base_uri "http://example.org/testing/"
+        property :name
+      end
+      class ::DefaultEncodedColonVocab < ::RDF::Vocabulary('http://example.org/test-3A') ; end
+      class ::EncodedColonVocabTest
+        include Spira::Resource
+        default_vocabulary DefaultEncodedColonVocab
+        base_uri "http://example.org/testing/"
+        property :name
+      end
+      class ::DefaultEncodedHashVocab < ::RDF::Vocabulary('http://example.org/test-23') ; end
+      class ::EncodedHashVocabTest
+        include Spira::Resource
+        default_vocabulary DefaultEncodedHashVocab
         base_uri "http://example.org/testing/"
         property :name
       end
@@ -100,10 +128,63 @@ describe 'default vocabularies' do
         test.save!
         test.should have_predicate @name
       end
-
     end
+
+    context "that ends in a colon seperator" do
+      before :each do
+        @name = RDF::URI("http://example.org/test:name")
+      end
+
+      it "should correctly not append a slash" do
+        test = ColonVocabTest.for('test2')
+        test.name = "test2"
+        test.save!
+        test.should have_predicate @name
+      end
+    end
+
+    context "that ends in an encoded slash seperator" do
+      before :each do
+        @name = RDF::URI("http://example.org/test-2Fname")
+      end
+
+      it "should correctly not append a slash" do
+        test = EncodedSlashVocabTest.for('test3')
+        test.name = "test3"
+        test.save!
+        test.should have_predicate @name
+      end
+    end
+
+    context "that ends in an encoded colon seperator" do
+      before :each do
+        @name = RDF::URI("http://example.org/test-3Aname")
+      end
+
+      it "should correctly not append a slash" do
+        test = EncodedColonVocabTest.for('test4')
+        test.name = "test4"
+        test.save!
+        test.should have_predicate @name
+      end
+    end
+
+    context "that ends in an encoded hash seperator" do
+      before :each do
+        @name = RDF::URI("http://example.org/test-23name")
+      end
+
+      it "should correctly not append a slash" do
+        test = EncodedHashVocabTest.for('test5')
+        test.name = "test5"
+        test.save!
+        test.should have_predicate @name
+      end
+    end
+
   end
 
 
 
 end
+

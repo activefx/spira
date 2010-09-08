@@ -12,7 +12,7 @@ module Spira
     # @see Spira::Resource::ClassMethods
     # @see Spira::Resource::InstanceMethods
     # @see Spira::Resource::Validations
-    module DSL  
+    module DSL
 
       ##
       # The name of the default repository to use for this class.  This
@@ -25,7 +25,7 @@ module Spira
         @repository_name = name
         @repository = Spira.repository(name)
       end
- 
+
       ##
       # The base URI for this class.  Attempts to create instances for non-URI
       # objects will be appended to this base URI.
@@ -36,7 +36,7 @@ module Spira
         @base_uri = uri unless uri.nil?
         @base_uri
       end
-     
+
       ##
       # The default vocabulary for this class.  Setting a default vocabulary
       # will allow properties to be defined without a `:predicate` option.
@@ -50,7 +50,7 @@ module Spira
       end
 
 
-      ## 
+      ##
       # Add a property to this class.  A property is an accessor field that
       # represents an RDF predicate.
       #
@@ -67,7 +67,7 @@ module Spira
       # type for this property.  If a Spira::Type is given, that class will be
       # used to serialize and unserialize values.  If a String is given, it
       # should be the String form of a Spira::Resource class name (Strings are
-      # used to prevent issues with load order).  
+      # used to prevent issues with load order).
       # @see Spira::Types
       # @see Spira::Type
       # @return [Void]
@@ -80,7 +80,7 @@ module Spira
       # `property`, but instead of a single value, a Ruby Array of objects will
       # be created instead.  Be warned that this should be a Set to match RDF
       # semantics, but this is not currently implemented.  Duplicate values of
-      # an array will be lost on save.  
+      # an array will be lost on save.
       #
       # @see Spira::Resource::DSL#property
       def has_many(name, opts = {})
@@ -116,7 +116,7 @@ module Spira
       # @return [Void]
       # @see http://rdf.rubyforge.net/RDF/URI.html
       # @see http://rdf.rubyforge.org/RDF.html#type-class_method
-      # @see Spira::Resource::ClassMethods#count 
+      # @see Spira::Resource::ClassMethods#count
       def type(uri = nil)
         unless uri.nil?
           @type = case uri
@@ -170,10 +170,10 @@ module Spira
       # Return the appropriate class object for a string or symbol
       # representation.  Throws errors correctly if the given class cannot be
       # located, or if it is not a Spira::Resource
-      # 
+      #
       def classize_resource(type)
         klass = nil
-        begin 
+        begin
           klass = qualified_const_get(type.to_s)
         rescue NameError
           raise NameError, "Could not find relation class #{type} (referenced as #{type} by #{self})"
@@ -223,7 +223,7 @@ module Spira
           when @default_vocabulary.nil?
             raise ResourceDeclarationError, "A :predicate option is required for types without a default vocabulary"
           else @default_vocabulary
-            separator = @default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
+            separator = @default_vocabulary.to_s =~ /(\/|#|:|-2F|-3A|-23)\z/ ? '' : '/'
             RDF::URI.new(@default_vocabulary.to_s + separator + name.to_s)
         end
         if !(predicate.respond_to?(:to_uri))
@@ -247,7 +247,7 @@ module Spira
         self.send(:define_method,name_equals) do |arg|
           attribute_set(name, arg)
         end
-        self.send(:define_method,name) do 
+        self.send(:define_method,name) do
           attribute_get(name)
         end
 
@@ -256,3 +256,4 @@ module Spira
     end
   end
 end
+
