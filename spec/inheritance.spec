@@ -56,11 +56,11 @@ describe Spira do
       end
 
       it "should respond to a propety getter on a grandchild class" do
-        @forum.should respond_to :title 
+        @forum.should respond_to :title
       end
 
       it "should respond to a propety setter on a grandchild class" do
-        @forum.should respond_to :title= 
+        @forum.should respond_to :title=
       end
 
       it "should maintain property metadata" do
@@ -130,7 +130,7 @@ describe Spira do
           has_many :names, :predicate => DC.titles
           property :name, :predicate => DC.title, :type => String
         end
-  
+
         module ::SpiraModule2
           include Spira::Resource
           has_many :authors, :predicate => DC.authors
@@ -221,6 +221,40 @@ describe Spira do
 
   end
 
+  context "inheritance with non default repository" do
+
+    before :all do
+      class ::OtherInheritanceItem
+        include Spira::Resource
+        default_source :symbols
+
+        property :title, :predicate => DC.title, :type => String
+        type  SIOC.item
+      end
+
+      class ::OtherInheritancePost < ::OtherInheritanceItem
+        type  SIOC.post
+        property :author, :predicate => DC.author
+      end
+    end
+
+    context "when passing properties to children, " do
+      before :each do
+        Spira.add_repository(:symbols, RDF::Repository.new)
+        @post = RDF::URI('http://example.org/post').as(OtherInheritancePost)
+      end
+
+      it "should have the same repository as the parent class" do
+        @post.class.repository_name.should == OtherInheritanceItem.repository_name
+      end
+
+      it "should have access to parent model attributes" do
+        @post.should respond_to :title
+      end
+    end
+
+  end
+
   context "base classes" do
     before :all do
       class ::BaseChild < Spira::Base ; end
@@ -238,3 +272,4 @@ describe Spira do
     end
   end
 end
+

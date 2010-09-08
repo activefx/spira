@@ -170,7 +170,14 @@ module Spira
         end
         # FIXME: This is clearly brittle and ugly.
         [:@base_uri, :@default_vocabulary, :@repository_name, :@type].each do |variable|
-          value = instance_variable_get(variable).nil? ? nil : instance_variable_get(variable).dup
+          v = instance_variable_get(variable)
+          if v.nil?
+            value = nil
+          elsif v.is_a?(Symbol)
+            value = v
+          else
+            value = v.dup
+          end
           child.instance_variable_set(variable, value)
         end
         [:@properties, :@lists, :@validators].each do |variable|
